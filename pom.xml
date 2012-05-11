@@ -19,7 +19,7 @@
       <!-- Timestamp format for the maven.build.timestamp property -->
       <!-- You can reference property in pom.xml or filtered resources (must 
          enable third-party plugin if using Maven < 2.1) -->
-      <javaee6.spec.version>3.0.0.Beta1</javaee6.spec.version>
+      <javaee6.spec.version>3.0.0.Final</javaee6.spec.version>
       <!-- Alternatively, comment out the above line, and un-comment the line below to 
         use version 3.0.0.Beta1-redhat-1 which is a release certified 
       to work with JBoss EAP 6. It requires you have access to the JBoss EAP 6 maven repository. -->
@@ -30,7 +30,19 @@
       <jettyVersion>8.1.0.RC2</jettyVersion>
 
    </properties>
+    <distributionManagement>
+        <repository>
+            <id>jboss-releases-repository</id>
+            <name>JBoss Releases Repository</name>
+            <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+        </repository>
 
+        <snapshotRepository>
+            <id>jboss-snapshots-repository</id>
+            <name>JBoss Snapshots Repository</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
    <dependencyManagement>
       <dependencies>
          <!-- JBoss distributes a complete set of Java EE 6 APIs including 
@@ -60,6 +72,8 @@
          <artifactId>cdi-api</artifactId>
          <scope>provided</scope>
       </dependency>
+
+
 
       <!-- Import the Common Annotations API (JSR-250), we use provided scope 
          as the API is included in JBoss -->
@@ -145,42 +159,91 @@
          <scope>test</scope>               
       </dependency>
 
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-continuation</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-http</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
+       <dependency>
+           <groupId>org.jboss.as</groupId>
+           <artifactId>jboss-as-websockets</artifactId>
+           <version>0.2.Alpha1</version>
+       </dependency>
 
        <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-io</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
+           <groupId>org.jboss.as</groupId>
+           <artifactId>jboss-as-server</artifactId>
 
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-server</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
+           <!-- Use the locally compiled snapshot for now
+       TODO: don't hard code this.-->
+           <version>7.1.2.Final-SNAPSHOT</version>
+           <scope>provided</scope>
+       </dependency>
+
 
        <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-util</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
+           <groupId>org.jboss.web</groupId>
+           <artifactId>jbossweb</artifactId>
+           <scope>provided</scope>
+           <!-- TODO: don't hard code this -->
+           <version>7.0.16.Final</version>
+       </dependency>
 
-      <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-websocket</artifactId>
-        <version>${jettyVersion}</version>
-      </dependency>
+       <dependency>
+           <groupId>org.jboss.spec.javax.servlet</groupId>
+           <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+           <version>1.0.0.Final</version>
+           <scope>provided</scope>
+       </dependency>
+
+      <!--<dependency>-->
+        <!--<groupId>org.eclipse.jetty</groupId>-->
+        <!--<artifactId>jetty-continuation</artifactId>-->
+        <!--<version>${jettyVersion}</version>-->
+      <!--</dependency>-->
+
+      <!--<dependency>-->
+        <!--<groupId>org.eclipse.jetty</groupId>-->
+        <!--<artifactId>jetty-http</artifactId>-->
+        <!--<version>${jettyVersion}</version>-->
+      <!--</dependency>-->
+
+       <!--<dependency>-->
+        <!--<groupId>org.eclipse.jetty</groupId>-->
+        <!--<artifactId>jetty-io</artifactId>-->
+        <!--<version>${jettyVersion}</version>-->
+      <!--</dependency>-->
+
+      <!--<dependency>-->
+        <!--<groupId>org.eclipse.jetty</groupId>-->
+        <!--<artifactId>jetty-server</artifactId>-->
+        <!--<version>${jettyVersion}</version>-->
+      <!--</dependency>-->
+
+       <!--<dependency>-->
+        <!--<groupId>org.eclipse.jetty</groupId>-->
+        <!--<artifactId>jetty-util</artifactId>-->
+        <!--<version>${jettyVersion}</version>-->
+      <!--</dependency>-->
+
+      <!--<dependency>-->
+        <!--<groupId>org.eclipse.jetty</groupId>-->
+        <!--<artifactId>jetty-websocket</artifactId>-->
+        <!--<version>${jettyVersion}</version>-->
+      <!--</dependency>-->
    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>jboss-public-repository-group</id>
+            <name>JBoss Public Repository Group</name>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
 
    <build>
       <!-- Maven will append the version to the finalName (which is the name 

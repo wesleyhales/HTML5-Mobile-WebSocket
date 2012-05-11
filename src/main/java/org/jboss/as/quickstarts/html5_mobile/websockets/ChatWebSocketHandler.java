@@ -21,18 +21,15 @@
  */
 package org.jboss.as.quickstarts.html5_mobile.websockets;
 
-import org.eclipse.jetty.util.ConcurrentHashSet;
-import org.eclipse.jetty.websocket.WebSocket;
-import org.eclipse.jetty.websocket.WebSocketHandler;
-import org.eclipse.jetty.websocket.WebSocketServlet;
-import org.jboss.as.quickstarts.html5_mobile.model.Member;
-import org.jboss.as.quickstarts.html5_mobile.rest.MemberService;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import org.jboss.as.quickstarts.html5_mobile.model.Member;
+import org.jboss.as.websockets.WebSocket;
+import org.jboss.as.websockets.servlet.WebSocketServlet;
+import org.jboss.websockets.Frame;
+import org.jboss.websockets.frame.TextFrame;
+
 import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,69 +41,60 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * @author <a href="mailto:whales@redhat.com">Wesley Hales</a>
  */
-public class ChatWebSocketHandler extends WebSocketHandler {
 
-    private static Set<ChatWebSocket> websockets = new ConcurrentHashSet<ChatWebSocket>();
-
-    public WebSocket doWebSocketConnect(HttpServletRequest request,
-            String protocol) {
-        return new ChatWebSocket();
-    }
+@WebServlet("/websocket/")
+public class ChatWebSocketHandler extends WebSocketServlet {
+    private static Set<WebSocket> websockets = new HashSet<WebSocket>();
 
     public void observeItemEvent(@Observes Member member) {
         try {
-            for (ChatWebSocket webSocket : getWebsockets()) {
-                webSocket.connection.sendMessage("{\"cdievent\":{\"fire\":function(){" +
-                                                        "eventObj.initEvent(\'memberEvent\', true, true);" +
-                                                        "eventObj.name = '" +  member.getName() + "';\n" +
-                                                        "document.dispatchEvent(eventObj);" +
-                                                        "}}}");
+            for (WebSocket socket : getWebsockets()) {
+                socket.writeFrame(TextFrame.from("{\"cdievent\":{\"fire\":function(){" +
+                        "eventObj.initEvent(\'memberEvent\', true, true);" +
+                        "eventObj.name = '" +  member.getName() + "';\n" +
+                        "document.dispatchEvent(eventObj);" +
+                        "}}}"));
             }
         } catch (IOException x) {
             //todo - do something
         }
     }
 
+    @Override
+    protected void onSocketOpened(WebSocket socket) throws IOException {
+        System.out.println("Websocket opened :)");
+        websockets.add(socket);
+    }
 
-    public class ChatWebSocket implements WebSocket.OnTextMessage {
+    @Override
+    protected void onSocketClosed(WebSocket socket) throws IOException {
+        System.out.println("Websocket closed :(");
+        websockets.remove(socket);
+    }
 
-        private Connection connection;
-
-        public void onOpen(Connection connection) {
-            // Client (Browser) WebSockets has opened a connection.
-            // 1) Store the opened connection
-            this.connection = connection;
-            // 2) Add ChatWebSocket in the global list of ChatWebSocket
-            // instances
-            // instance.
-            getWebsockets().add(this);
-        }
-
-        public void onMessage(String data) {
-            // Loop for each instance of ChatWebSocket to send message server to
-            // each client WebSockets.
+    @Override
+    protected void onReceivedFrame(WebSocket socket) throws IOException {
+        final Frame frame = socket.readFrame();
+        if (frame instanceof TextFrame) {
+            final String text = ((TextFrame) frame).getText();
+            if ("Hello".equals(text)) {
+                socket.writeFrame(TextFrame.from("Hey, there!"));
+            }
             try {
-                for (ChatWebSocket webSocket : getWebsockets()) {
+                for (WebSocket asocket : getWebsockets()) {
+                    System.out.println("!!!!!!!!!!!!!!!!!!" + asocket.getSocketID());
                     // send a message to the current client WebSocket.
-                    webSocket.connection.sendMessage(data);
+                    asocket.writeFrame(TextFrame.from(text));
                 }
             } catch (IOException x) {
                 // Error was detected, close the ChatWebSocket client side
-                this.connection.disconnect();
+                System.out.println("!!!!!!!!!!!!!!!!!!huge problem");
             }
-
-        }
-
-        public void onClose(int closeCode, String message) {
-            // Remove ChatWebSocket in the global list of ChatWebSocket
-            // instance.
-            getWebsockets().remove(this);
         }
     }
 
-    public static synchronized Set<ChatWebSocket> getWebsockets() {
+    public static synchronized Set<WebSocket> getWebsockets() {
         return websockets;
     }
-
 
 }

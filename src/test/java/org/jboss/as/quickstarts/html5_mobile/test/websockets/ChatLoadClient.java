@@ -21,9 +21,7 @@
  */
 package org.jboss.as.quickstarts.html5_mobile.test.websockets;
 
-import org.eclipse.jetty.websocket.WebSocket;
-import org.eclipse.jetty.websocket.WebSocketClient;
-import org.eclipse.jetty.websocket.WebSocketClientFactory;
+
 
 import java.io.IOException;
 import java.net.URI;
@@ -44,55 +42,56 @@ public class ChatLoadClient
     {
 
 
-      WebSocketClientFactory factory = new WebSocketClientFactory();
-        factory.setBufferSize(4096);
-        factory.start();
+//      WebSocketClientFactory factory = new WebSocketClientFactory();
+//        factory.setBufferSize(4096);
+//        factory.start();
+//
+//      WebSocketClient client = factory.newWebSocketClient();
+//      //client.setBufferSize(4096);
+//      client.setMaxIdleTime(300000);
+//      client.setProtocol("chat");
+//      //client.start();
+//
+//        final long startTime = System.currentTimeMillis();
+//        final long endTime;
+//        try {
+//
+//
+//      for (int i =0;i<6000;i++){
+//      final int marker = i;
+//      WebSocket.Connection connection = client.open(new URI("ws://192.168.1.101:8081/"), new WebSocket.OnTextMessage()
+//       {
+//         public void onOpen(Connection connection)
+//         {
+//           // open notification
+//             //System.out.println("-----------------------1");
+//         }
+//
+//         public void onClose(int closeCode, String message)
+//         {
+//           // close notification
+//            System.out.println("-----------------------CLOSE: " + marker + " : " + message);
+//         }
+//
+//         public void onMessage(String data)
+//         {
+//             //System.out.println("-----------------------3:" + marker + " : " + data);
+//           // handle incoming message
+//         }
+//       }).get(5, TimeUnit.SECONDS);
+//
+//       connection.sendMessage("Hello World " + marker);
+//      }
+//
+//
+//        } finally {
+//          endTime = System.currentTimeMillis();
+//        }
+//        final long duration = endTime - startTime;
+//        System.out.println("-----------------------That took: " + duration + "ms");
+//
+//    }
 
-      WebSocketClient client = factory.newWebSocketClient();
-      //client.setBufferSize(4096);
-      client.setMaxIdleTime(300000);
-      client.setProtocol("chat");
-      //client.start();
 
-        final long startTime = System.currentTimeMillis();
-        final long endTime;
-        try {
-
-
-      for (int i =0;i<6000;i++){
-      final int marker = i;
-      WebSocket.Connection connection = client.open(new URI("ws://192.168.1.101:8081/"), new WebSocket.OnTextMessage()
-       {
-         public void onOpen(Connection connection)
-         {
-           // open notification
-             //System.out.println("-----------------------1");
-         }
-
-         public void onClose(int closeCode, String message)
-         {
-           // close notification
-            System.out.println("-----------------------CLOSE: " + marker + " : " + message);
-         }
-
-         public void onMessage(String data)
-         {
-             //System.out.println("-----------------------3:" + marker + " : " + data);
-           // handle incoming message
-         }
-       }).get(5, TimeUnit.SECONDS);
-
-       connection.sendMessage("Hello World " + marker);
-      }
-
-
-        } finally {
-          endTime = System.currentTimeMillis();
-        }
-        final long duration = endTime - startTime;
-        System.out.println("-----------------------That took: " + duration + "ms");
-
-    }
-
-
+}
 }

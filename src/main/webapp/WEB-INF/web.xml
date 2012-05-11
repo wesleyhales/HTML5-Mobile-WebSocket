@@ -6,7 +6,4 @@
 	<welcome-file-list>
 		<welcome-file>chat.html</welcome-file>
 	</welcome-file-list>
-	<listener>
-		<listener-class>org.jboss.as.quickstarts.html5_mobile.websockets.ChatServerServletContextListener</listener-class>
-	</listener>
 </web-app>
